@@ -9,7 +9,25 @@
     <LinearLayout
         android:id="@+id/linearLayoutTmap"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:orientation="vertical">
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnPresent"
+            android:src="@drawable/arrow"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content">
+        </ImageButton>
+
+    </LinearLayout>
+
 </android.widget.LinearLayout>
