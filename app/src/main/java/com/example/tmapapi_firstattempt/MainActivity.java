@@ -47,8 +47,10 @@ public class MainActivity extends AppCompatActivity {
     double Latitude = 0;
     double presentLat = 0;
     myDBHelper myHelper;
+
     Button btnInit, btnInsert, btnSelect;
     EditText edtLat, edtLong, edtLatResult, edtLongResult;
+
     SQLiteDatabase sqlDB;
 
     TMapView tMapView = null;
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         btnInit = (Button) findViewById(R.id.btnInit);
         btnInsert = (Button) findViewById(R.id.btnInsert);
         btnSelect = (Button) findViewById(R.id.btnSelect);
+
         myHelper = new myDBHelper(this);
 
 
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
 
         btnInit.setOnClickListener(new View.OnClickListener() {
             @Override
