@@ -7,9 +7,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
@@ -22,6 +26,8 @@ import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,9 +46,10 @@ public class MainActivity extends AppCompatActivity {
     double presentLong = 0;
     double Latitude = 0;
     double presentLat = 0;
-
-    //GpsTracker
-    //public GpsTracker gpsTracker;
+    myDBHelper myHelper;
+    Button btnInit, btnInsert, btnSelect;
+    EditText edtLat, edtLong, edtLatResult, edtLongResult;
+    SQLiteDatabase sqlDB;
 
     TMapView tMapView = null;
 
@@ -51,11 +58,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         LinearLayout linearLayoutTmap = (LinearLayout) findViewById(R.id.linearLayoutTmap);
         TMapView tMapView = new TMapView(this);
         ImageButton btnPresent = (ImageButton)findViewById(R.id.btnPresent);
         TMapMarkerItem markerItem1 = new TMapMarkerItem();
+
+        edtLat = (EditText) findViewById(R.id.edtLat);
+        edtLong = (EditText) findViewById(R.id.edtLong);
+        edtLatResult = (EditText) findViewById(R.id.edtLatResult);
+        edtLongResult = (EditText) findViewById(R.id.edtLongResult);
+        btnInit = (Button) findViewById(R.id.btnInit);
+        btnInsert = (Button) findViewById(R.id.btnInsert);
+        btnSelect = (Button) findViewById(R.id.btnSelect);
+        myHelper = new myDBHelper(this);
+
 
         presentLat = 37.4954383;
         presentLong = 126.9594522;
@@ -63,30 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
         tMapView.setSKTMapApiKey(API_KEY);
         linearLayoutTmap.addView(tMapView);
-
-        //Event settings
-        tMapView.setOnClickListenerCallBack(new TMapView.OnClickListenerCallback(){
-            @Override
-            public boolean onPressEvent(ArrayList arrayList, ArrayList arrayList1, TMapPoint tMapPoint, PointF pointF){
-                Toast.makeText(MainActivity.this, "onPress~!", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            @Override
-            public boolean onPressUpEvent(ArrayList arrayList, ArrayList arrayList1, TMapPoint tMapPoint, PointF pointF){
-                Toast.makeText(MainActivity.this, "onPressUp~!", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
-        //marker Icon
-//        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.map_pin_red);
-//
-//        markerItem1.setIcon(bitmap);
-//        markerItem1.setPosition(0.5f,1.0f);
-//        markerItem1.setTMapPoint(tMapPoint1);
-//        markerItem1.setName("SKTtower");
-//        tMapView.addMarkerItem("markerItme1",markerItem1);
-
-//        tMapView.setCenterPoint(126.985302, 37.570841);
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.map_pin_red);
         //btn settings
@@ -102,7 +94,59 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnInit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sqlDB = myHelper.getWritableDatabase();
+                myHelper.onUpgrade(sqlDB, 1, 2);
+                sqlDB.close();
+            }
+        });
+        btnInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sqlDB = myHelper.getWritableDatabase();
+                sqlDB.execSQL("INSERT INTO locationTBL VALUES ( " + edtLat.getText().toString() + " , " + edtLong.getText().toString() + ");");
+                sqlDB.close();
+                Toast.makeText(getApplicationContext(),"입력됨.",Toast.LENGTH_SHORT).show();
+            }
+        });
+        btnSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sqlDB = myHelper.getReadableDatabase();
+                Cursor cursor;
+                cursor = sqlDB.rawQuery("SELECT * FROM locationTBL;", null);
 
+                String strLats = "경도" + "\r\n" + "-----" + "\r\n";
+                String strLongs = "위도" + "\r\n" + "-----" + "\r\n";
+
+                while(cursor.moveToNext()){
+                    strLats += cursor.getString(0) + "\r\n";
+                    strLongs += cursor.getString(1) + "\r\n";
+                }
+
+                edtLatResult.setText(strLats);
+                edtLongResult.setText(strLongs);
+
+                cursor.close();
+                sqlDB.close();
+            }
+        });
     }
 
+    public class myDBHelper extends SQLiteOpenHelper {
+        public myDBHelper(Context context){
+            super(context, "locationDB", null, 1);
+        }
+        @Override
+        public void onCreate(SQLiteDatabase db){
+            db.execSQL("CREATE TABLE locationTBL ( locLatitude DOUBLE PRIMARY KEY, locLongtitude DOUBLE);");
+        }
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
+            db.execSQL("DROP TABLE IF EXISTS locationTBL");
+            onCreate(db);
+        }
+    }
 }
