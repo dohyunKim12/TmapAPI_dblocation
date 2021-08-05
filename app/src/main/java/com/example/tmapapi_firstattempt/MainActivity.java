@@ -50,8 +50,10 @@ public class MainActivity extends AppCompatActivity {
     double Latitude = 0;
     double presentLat = 0;
     myDBHelper myHelper;
+
     Button btnInit, btnInsert, btnSelect;
     EditText edtLat, edtLong, edtLatResult, edtLongResult;
+
     SQLiteDatabase sqlDB;
 
     Handler handler = null;
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         btnInit = (Button) findViewById(R.id.btnInit);
         btnInsert = (Button) findViewById(R.id.btnInsert);
         btnSelect = (Button) findViewById(R.id.btnSelect);
+
         myHelper = new myDBHelper(this);
         LinearLayout linearLayoutTmap = (LinearLayout) findViewById(R.id.linearLayoutTmap);
 
@@ -97,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 tMapView.addMarkerItem("markerItem", markerItem1);
             }
         });
+
 
         btnInit.setOnClickListener(new View.OnClickListener() {
             @Override
