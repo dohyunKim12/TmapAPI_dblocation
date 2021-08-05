@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.ContentProvider;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,6 +25,8 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.StaticLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -51,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
     EditText edtLat, edtLong, edtLatResult, edtLongResult;
     SQLiteDatabase sqlDB;
 
+    Handler handler = null;
+    int i = 0;
+
     TMapView tMapView = null;
 
     @Override
@@ -58,10 +64,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LinearLayout linearLayoutTmap = (LinearLayout) findViewById(R.id.linearLayoutTmap);
-        TMapView tMapView = new TMapView(this);
         ImageButton btnPresent = (ImageButton)findViewById(R.id.btnPresent);
-        TMapMarkerItem markerItem1 = new TMapMarkerItem();
 
         edtLat = (EditText) findViewById(R.id.edtLat);
         edtLong = (EditText) findViewById(R.id.edtLong);
@@ -71,12 +74,14 @@ public class MainActivity extends AppCompatActivity {
         btnInsert = (Button) findViewById(R.id.btnInsert);
         btnSelect = (Button) findViewById(R.id.btnSelect);
         myHelper = new myDBHelper(this);
-
+        LinearLayout linearLayoutTmap = (LinearLayout) findViewById(R.id.linearLayoutTmap);
 
         presentLat = 37.4954383;
         presentLong = 126.9594522;
         TMapPoint presentPoint = new TMapPoint(presentLat, presentLong);
+        TMapMarkerItem markerItem1 = new TMapMarkerItem();
 
+        tMapView = new TMapView(this);
         tMapView.setSKTMapApiKey(API_KEY);
         linearLayoutTmap.addView(tMapView);
 
@@ -89,8 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 markerItem1.setIcon(bitmap);
                 markerItem1.setPosition(0.5f,1.0f);
                 markerItem1.setTMapPoint(presentPoint);
-                tMapView.addMarkerItem("markerItme1",markerItem1);
-
+                tMapView.addMarkerItem("markerItem", markerItem1);
             }
         });
 
@@ -133,6 +137,14 @@ public class MainActivity extends AppCompatActivity {
                 sqlDB.close();
             }
         });
+
+
+        // Handler
+        handler = new Handler();
+        ThreadClass thread = new ThreadClass();
+        handler.post(thread);
+
+
     }
 
     public class myDBHelper extends SQLiteOpenHelper {
@@ -147,6 +159,64 @@ public class MainActivity extends AppCompatActivity {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
             db.execSQL("DROP TABLE IF EXISTS locationTBL");
             onCreate(db);
+        }
+    }
+    class ThreadClass extends Thread {
+        public void run() {
+            if (i == 1){
+                sqlDB = myHelper.getReadableDatabase();
+                Cursor cursor;
+                cursor = sqlDB.rawQuery("SELECT * FROM locationTBL;", null);
+
+                String strLats = "경도" + "\r\n" + "-----" + "\r\n";
+                String strLongs = "위도" + "\r\n" + "-----" + "\r\n";
+
+                ArrayList<Double> aryLats = new ArrayList<Double>();
+                ArrayList<Double> aryLongs = new ArrayList<Double>();
+
+                while(cursor.moveToNext()) {
+                    aryLats.add(Double.valueOf(cursor.getString(0)));
+                    aryLongs.add(Double.valueOf(cursor.getString(1)));
+                    strLats += cursor.getString(0) + "\r\n";
+                    strLongs += cursor.getString(1) + "\r\n";
+                }
+
+                edtLatResult.setText(strLats);
+                edtLongResult.setText(strLongs);
+
+                cursor.close();
+                sqlDB.close();
+
+
+//                TMapView tMapView = new TMapView(getApplication());
+                Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.map_pin_red);
+                Double Lat = 0.0;
+                Double Long = 0.0;
+
+                for (int i = 0; i < aryLats.size(); i++){
+                    TMapMarkerItem markerItem = new TMapMarkerItem();
+                    Lat = aryLats.get(i);
+                    Long = aryLongs.get(i);
+                    TMapPoint point = new TMapPoint(Lat, Long);
+                    markerItem.setIcon(bitmap2);
+                    markerItem.setPosition(0.5f,1.0f);
+                    markerItem.setTMapPoint(point);
+                    tMapView.addMarkerItem("markeritem"+i,markerItem);
+                }
+
+                i = 0;
+            }
+            else {
+                i = 1;
+            }
+            try {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+
+            handler.post(this);
         }
     }
 }
