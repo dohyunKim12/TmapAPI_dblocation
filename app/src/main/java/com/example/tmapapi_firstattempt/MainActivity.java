@@ -1,146 +1,95 @@
 package com.example.tmapapi_firstattempt;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.content.ContentProvider;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.PointF;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationManager;
-import android.location.LocationProvider;
-import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.StaticLayout;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.skt.Tmap.TMapGpsManager;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    ArrayList<ArrayList<String>> records = new ArrayList<ArrayList<String>>();
+
     String API_KEY = "l7xx9f2b58a7392548a5985f294f0b3e125e";
-    double Longtitude = 0;
     double presentLong = 0;
-    double Latitude = 0;
     double presentLat = 0;
-    myDBHelper myHelper;
 
-    Button btnInit, btnInsert, btnSelect;
-    EditText edtLat, edtLong, edtLatResult, edtLongResult;
-
-    SQLiteDatabase sqlDB;
+    ImageButton btnPresent;
+    EditText edtLatResult, edtLongResult;
 
     Handler handler = null;
-    int i = 0;
+    int len_records = 0;
+    int tmp_len_records = 0;
 
     TMapView tMapView = null;
+
+    Geocoder geocoder = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ImageButton btnPresent = (ImageButton)findViewById(R.id.btnPresent);
-
-        edtLat = (EditText) findViewById(R.id.edtLat);
-        edtLong = (EditText) findViewById(R.id.edtLong);
+        btnPresent = (ImageButton) findViewById(R.id.btnPresent);
         edtLatResult = (EditText) findViewById(R.id.edtLatResult);
         edtLongResult = (EditText) findViewById(R.id.edtLongResult);
-        btnInit = (Button) findViewById(R.id.btnInit);
-        btnInsert = (Button) findViewById(R.id.btnInsert);
-        btnSelect = (Button) findViewById(R.id.btnSelect);
 
-        myHelper = new myDBHelper(this);
         LinearLayout linearLayoutTmap = (LinearLayout) findViewById(R.id.linearLayoutTmap);
 
-        presentLat = 37.4954383;
-        presentLong = 126.9594522;
+        //Soongsil.Univ
+        presentLat = 37.49637;
+        presentLong = 126.95742;
+
         TMapPoint presentPoint = new TMapPoint(presentLat, presentLong);
-        TMapMarkerItem markerItem1 = new TMapMarkerItem();
+        TMapMarkerItem markerItem_pres = new TMapMarkerItem();
 
         tMapView = new TMapView(this);
         tMapView.setSKTMapApiKey(API_KEY);
         linearLayoutTmap.addView(tMapView);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.map_pin_red);
+        geocoder = new Geocoder(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1); //위치권한 탐색 허용 관련 내용
+        }
+
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loc_icon);
         //btn settings
         btnPresent.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 tMapView.setCenterPoint(presentLong,presentLat);
-                markerItem1.setIcon(bitmap);
-                markerItem1.setPosition(0.5f,1.0f);
-                markerItem1.setTMapPoint(presentPoint);
-                tMapView.addMarkerItem("markerItem", markerItem1);
+                markerItem_pres.setIcon(bitmap);
+                markerItem_pres.setPosition(0.5f,1.0f);
+                markerItem_pres.setTMapPoint(presentPoint);
+                tMapView.addMarkerItem("markerItem", markerItem_pres);
             }
         });
 
-
-        btnInit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sqlDB = myHelper.getWritableDatabase();
-                myHelper.onUpgrade(sqlDB, 1, 2);
-                sqlDB.close();
-            }
-        });
-        btnInsert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sqlDB = myHelper.getWritableDatabase();
-                sqlDB.execSQL("INSERT INTO locationTBL VALUES ( " + edtLat.getText().toString() + " , " + edtLong.getText().toString() + ");");
-                sqlDB.close();
-                Toast.makeText(getApplicationContext(),"입력됨.",Toast.LENGTH_SHORT).show();
-            }
-        });
-        btnSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sqlDB = myHelper.getReadableDatabase();
-                Cursor cursor;
-                cursor = sqlDB.rawQuery("SELECT * FROM locationTBL;", null);
-
-                String strLats = "경도" + "\r\n" + "-----" + "\r\n";
-                String strLongs = "위도" + "\r\n" + "-----" + "\r\n";
-
-                while(cursor.moveToNext()){
-                    strLats += cursor.getString(0) + "\r\n";
-                    strLongs += cursor.getString(1) + "\r\n";
-                }
-
-                edtLatResult.setText(strLats);
-                edtLongResult.setText(strLongs);
-
-                cursor.close();
-                sqlDB.close();
-            }
-        });
 
 
         // Handler
@@ -148,79 +97,125 @@ public class MainActivity extends AppCompatActivity {
         ThreadClass thread = new ThreadClass();
         handler.post(thread);
 
-
     }
 
-    public class myDBHelper extends SQLiteOpenHelper {
-        public myDBHelper(Context context){
-            super(context, "locationDB", null, 1);
-        }
-        @Override
-        public void onCreate(SQLiteDatabase db){
-            db.execSQL("CREATE TABLE locationTBL ( locLatitude DOUBLE PRIMARY KEY, locLongtitude DOUBLE);");
-        }
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
-            db.execSQL("DROP TABLE IF EXISTS locationTBL");
-            onCreate(db);
-        }
-    }
     class ThreadClass extends Thread {
         public void run() {
-            if (i == 1){
-                sqlDB = myHelper.getReadableDatabase();
-                Cursor cursor;
-                cursor = sqlDB.rawQuery("SELECT * FROM locationTBL;", null);
+            records.clear();
+            URLConnector url = new URLConnector();
+            url.start();
 
-                String strLats = "경도" + "\r\n" + "-----" + "\r\n";
-                String strLongs = "위도" + "\r\n" + "-----" + "\r\n";
+            try {url.join();}
+            catch (Exception e){e.printStackTrace();}
 
-                ArrayList<Double> aryLats = new ArrayList<Double>();
-                ArrayList<Double> aryLongs = new ArrayList<Double>();
+            String result = url.getTemp();
 
-                while(cursor.moveToNext()) {
-                    aryLats.add(Double.valueOf(cursor.getString(0)));
-                    aryLongs.add(Double.valueOf(cursor.getString(1)));
-                    strLats += cursor.getString(0) + "\r\n";
-                    strLongs += cursor.getString(1) + "\r\n";
+            if(result.equals("no results\n")){
+                len_records = 0;
+                System.out.println("set len_rec to zero");
+            }
+            else ParseJSON(result);
+
+            //Toast msg
+            if(tmp_len_records<len_records) {
+
+                String occ_toast = records.get(len_records-1).get(0);
+                String lat_geo = records.get(len_records-1).get(1);
+                String long_geo = records.get(len_records-1).get(2);
+                String text_toast = "";
+
+                List<Address> list = null;
+                try{
+                    list = geocoder.getFromLocation(Double.valueOf(lat_geo), Double.valueOf(long_geo), 10);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (list != null){
+                    if (list.size() == 0){
+                        text_toast = "해당되는 주소 정보는 없습니다.";
+                    }
+                    else {text_toast = list.get(0).getAddressLine(0);}
                 }
 
-                edtLatResult.setText(strLats);
-                edtLongResult.setText(strLongs);
-
-                cursor.close();
-                sqlDB.close();
-
-
-//                TMapView tMapView = new TMapView(getApplication());
-                Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.map_pin_red);
-                Double Lat = 0.0;
-                Double Long = 0.0;
-
-                for (int i = 0; i < aryLats.size(); i++){
-                    TMapMarkerItem markerItem = new TMapMarkerItem();
-                    Lat = aryLats.get(i);
-                    Long = aryLongs.get(i);
-                    TMapPoint point = new TMapPoint(Lat, Long);
-                    markerItem.setIcon(bitmap2);
-                    markerItem.setPosition(0.5f,1.0f);
-                    markerItem.setTMapPoint(point);
-                    tMapView.addMarkerItem("markeritem"+i,markerItem);
-                }
-
-                i = 0;
+                Toast.makeText(getApplicationContext(),"CAR Accident occur! at"+occ_toast+"\n On "+text_toast,Toast.LENGTH_LONG).show();
             }
-            else {
-                i = 1;
+
+
+            String lats = "";
+            String longs = "";
+
+            Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.map_pin_red);
+            Double Lat;
+            Double Long;
+
+            for (int i=0;i<tmp_len_records;i++){
+                tMapView.removeMarkerItem("markeritem"+i);
             }
-            try {
-                Thread.sleep(100);
+            System.out.println("len_recodrds: "+len_records);
+
+            for (int i=0;i< len_records;i++){
+                TMapMarkerItem markerItem = new TMapMarkerItem();
+                lats += (records.get(i).get(1).toString() + "\n");
+                longs += (records.get(i).get(2).toString() + "\n");
+
+                Lat = Double.valueOf(records.get(i).get(1));
+                Long = Double.valueOf(records.get(i).get(2));
+
+                TMapPoint point = new TMapPoint(Lat, Long);
+                markerItem.setIcon(bitmap2);
+                markerItem.setPosition(0.5f,1.0f);
+                markerItem.setTMapPoint(point);
+                tMapView.addMarkerItem("markeritem"+i,markerItem);
             }
-            catch (InterruptedException e){
-                e.printStackTrace();
+
+            tmp_len_records = len_records;
+
+            if (len_records >= 1) {
+                lats = lats.substring(0, lats.length()-1);      //마지막 개행문자 제거.
+                longs = longs.substring(0, longs.length()-1);   //마지막 개행문자 제거.
             }
+            edtLatResult.setText(lats);
+            edtLongResult.setText(longs);
 
             handler.post(this);
         }
+    }
+    public void ParseJSON(String target){
+        try {
+            JSONObject json = new JSONObject(target);
+
+            JSONArray arr = json.getJSONArray("accident");
+
+            System.out.println(arr.length());
+
+            len_records = 0;
+            for(int i = 0; i < arr.length(); i++){
+                //System.out.println("init recs:"+ records);
+                //record.clear();
+                ArrayList<String> record = new ArrayList<String>();
+                JSONObject json2 = arr.getJSONObject(i);
+                record.add(json2.getString("occur_time"));
+                //System.out.println("record " + i + ": "+record);
+                record.add(json2.getString("latitude"));
+                //System.out.println("record " + i + ": "+record);
+                record.add(json2.getString("longitude"));
+                //System.out.println("record " + i + ": "+record);
+
+                records.add(record);
+                //System.out.println("records : : : " + records.toString());
+
+                len_records++;
+                //System.out.println("len_rocrods: "+len_records);
+                //System.out.println("rocrods: "+records);
+            }
+
+            return;
+        }
+
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return;
     }
 }

@@ -10,84 +10,74 @@
         android:id="@+id/linearLayoutTmap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="8"
+        android:layout_weight="7"
         android:orientation="vertical">
-
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/edtLatResult"
-            android:layout_weight="1"/>
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/edtLongResult"
-            android:layout_weight="1"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
         android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/btnPresent"
-            android:src="@drawable/arrow"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:adjustViewBounds="true"
+            android:contentDescription="presentLocation"
             android:scaleType="fitCenter"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="20dp">
-        </ImageButton>
+            android:src="@drawable/arrow"></ImageButton>
+
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="50"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical">
-            <EditText
-                android:id="@+id/edtLat"
-                android:hint="경도"
+
+            <TextView
+                android:id="@+id/textView"
+                style="@style/Widget.AppCompat.TextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:background="#81EFB9C3"
+                android:fontFamily="sans-serif"
+                android:text="위도"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="#0B0B0B" />
+
             <EditText
-                android:id="@+id/edtLong"
-                android:hint="위도"
+                android:id="@+id/edtLatResult"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:textAlignment="center"
+                android:hint="Latitudes" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
-            <Button
-                android:id="@+id/btnInit"
+
+            <TextView
+                android:id="@+id/textView2"
+                style="@style/Widget.AppCompat.TextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="초기화"/>
-            <Button
-                android:id="@+id/btnInsert"
+                android:background="#81EFB9C3"
+                android:fontFamily="sans-serif"
+                android:text="경도"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="#0B0B0B" />
+
+            <EditText
+                android:id="@+id/edtLongResult"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="입력" />
-            <Button
-                android:id="@+id/btnSelect"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="조회"/>
+                android:textAlignment="center"
+                android:hint="Longitudes" />
         </LinearLayout>
     </LinearLayout>
 
