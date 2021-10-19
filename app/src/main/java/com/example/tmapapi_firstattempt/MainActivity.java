@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -141,7 +142,18 @@ public class MainActivity extends AppCompatActivity {
                     else {text_toast = list.get(0).getAddressLine(0);}
                 }
 
-                Toast.makeText(getApplicationContext(),"교통사고 발생 알림!! \n시간 : "+occ_toast+"\n장소 : "+text_toast,Toast.LENGTH_LONG).show();
+                /*Toast.makeText(getApplicationContext(),"교통사고 발생 알림!! \n시간 : "+occ_toast+"\n장소 : "+text_toast,Toast.LENGTH_LONG).show();*/
+
+                View layout = getLayoutInflater().inflate(R.layout.toast_layout, null);
+                TextView textView = layout.findViewById(R.id.Toast);
+                textView.setText("교통사고 발생 알림!! \n시간 : "+occ_toast+"\n장소 : "+text_toast);
+                Toast toastView = Toast.makeText(getApplicationContext(),"교통사고 발생 알림!! \n시간 : "+occ_toast+"\n장소 : "+text_toast,Toast.LENGTH_LONG);
+
+                toastView.setView(layout);
+                toastView.show();
+
+
+
             }
 
 
