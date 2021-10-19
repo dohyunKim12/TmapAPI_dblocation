@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                     else {text_toast = list.get(0).getAddressLine(0);}
                 }
 
-                Toast.makeText(getApplicationContext(),"CAR Accident occur! at"+occ_toast+"\n On "+text_toast,Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"교통사고 발생 알림!! \n시간 : "+occ_toast+"\n장소 : "+text_toast,Toast.LENGTH_LONG).show();
             }
 
 
