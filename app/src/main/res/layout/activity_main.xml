@@ -10,8 +10,9 @@
         android:id="@+id/linearLayoutTmap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="7"
+        android:layout_weight="1"
         android:orientation="vertical">
+
     </LinearLayout>
 
     <LinearLayout
@@ -26,9 +27,30 @@
             android:adjustViewBounds="true"
             android:contentDescription="presentLocation"
             android:scaleType="fitCenter"
-            android:src="@drawable/arrow"></ImageButton>
+            android:src="@drawable/location_btn2"
+            android:background="#00FF0000"></ImageButton>
 
         <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/accCnt"
+                style="@style/Widget.AppCompat.TextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:fontFamily="@font/gmarket_sans_medium"
+                android:text="서울 중구 을지로 42"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="#0B0B0B" />
+        </LinearLayout>
+
+       <!-- <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -78,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:hint="Longitudes" />
-        </LinearLayout>
+        </LinearLayout>-->
     </LinearLayout>
 
 </android.widget.LinearLayout>
