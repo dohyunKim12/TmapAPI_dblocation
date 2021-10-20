@@ -9,13 +9,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#fdecf1"
-        android:padding="10dp"
-        android:radius="50dp"
         android:fontFamily="@font/gmarket_sans_medium"
+        android:padding="15dp"
+        android:radius="50dp"
         android:text="교통사고 발생 알림!! \n시간 : 2021-01-01 00:00:00\n장소 : 서울특별시"
         android:textColor="@color/black"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="96dp"
-        tools:layout_editor_absoluteY="566dp" />
+        tools:layout_editor_absoluteX="93dp"
+        tools:layout_editor_absoluteY="530dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
