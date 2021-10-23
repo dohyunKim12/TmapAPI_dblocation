@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     ImageButton btnPresent;
     EditText edtLatResult, edtLongResult;
+    TextView txtAccCnt;
 
     Handler handler = null;
     int len_records = 0;
@@ -54,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnPresent = (ImageButton) findViewById(R.id.btnPresent);
-        edtLatResult = (EditText) findViewById(R.id.edtLatResult);
-        edtLongResult = (EditText) findViewById(R.id.edtLongResult);
+        txtAccCnt = (TextView) findViewById(R.id.accCnt);
+        //edtLatResult = (EditText) findViewById(R.id.edtLatResult);
+        //edtLongResult = (EditText) findViewById(R.id.edtLongResult);
 
         LinearLayout linearLayoutTmap = (LinearLayout) findViewById(R.id.linearLayoutTmap);
 
@@ -77,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loc_icon);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.current_pos);
         //btn settings
         btnPresent.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -87,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
                 markerItem_pres.setPosition(0.5f,1.0f);
                 markerItem_pres.setTMapPoint(presentPoint);
                 tMapView.addMarkerItem("markerItem", markerItem_pres);
+
+                txtAccCnt.setText("서울특별시 동작구 상도로 369");
             }
         });
 
@@ -137,14 +142,25 @@ public class MainActivity extends AppCompatActivity {
                     else {text_toast = list.get(0).getAddressLine(0);}
                 }
 
-                Toast.makeText(getApplicationContext(),"CAR Accident occur! at"+occ_toast+"\n On "+text_toast,Toast.LENGTH_LONG).show();
+                /*Toast.makeText(getApplicationContext(),"교통사고 발생 알림!! \n시간 : "+occ_toast+"\n장소 : "+text_toast,Toast.LENGTH_LONG).show();*/
+
+                View layout = getLayoutInflater().inflate(R.layout.toast_layout, null);
+                TextView textView = layout.findViewById(R.id.Toast);
+                textView.setText("교통사고 발생 알림!! \n시간 : "+occ_toast+"\n장소 : "+text_toast);
+                Toast toastView = Toast.makeText(getApplicationContext(),"교통사고 발생 알림!! \n시간 : "+occ_toast+"\n장소 : "+text_toast,Toast.LENGTH_LONG);
+
+                toastView.setView(layout);
+                toastView.show();
+
+
+
             }
 
 
             String lats = "";
             String longs = "";
 
-            Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.map_pin_red);
+            Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.accident_pos);
             Double Lat;
             Double Long;
 
@@ -174,8 +190,9 @@ public class MainActivity extends AppCompatActivity {
                 lats = lats.substring(0, lats.length()-1);      //마지막 개행문자 제거.
                 longs = longs.substring(0, longs.length()-1);   //마지막 개행문자 제거.
             }
-            edtLatResult.setText(lats);
-            edtLongResult.setText(longs);
+
+           // edtLatResult.setText(lats);
+           // edtLongResult.setText(longs);
 
             handler.post(this);
         }
