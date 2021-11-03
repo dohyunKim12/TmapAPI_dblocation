@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/bubble_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#fdecf1"
+        android:fontFamily="@font/gmarket_sans_medium"
+        android:padding="15dp"
+        android:radius="50dp"
+        android:text="교통사고 발생 알림!! \n시간 : 2021-01-01 00:00:00\n장소 : 서울특별시"
+        android:textColor="@color/black"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="93dp"
+        tools:layout_editor_absoluteY="530dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

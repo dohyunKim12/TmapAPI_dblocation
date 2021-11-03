@@ -4,7 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/MobileApps/TmapAPI_dbconnect/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/MobileApps/TmapAPI_dbconnect/app/src/main/res/layout/bubble_popup.xml" value="0.121875" />
         <entry key="..\:/MobileApps/TmapAPI_dbconnect/app/src/main/res/layout/custom_toast.xml" value="0.19635416666666666" />
+        <entry key="..\:/MobileApps/TmapAPI_dbconnect/app/src/main/res/layout/toast_layout.xml" value="0.132" />
         <entry key="..\:/MobileApps/TmapAPI_firstAttempt/app/src/main/res/layout/activity_dohyun.xml" value="0.2" />
         <entry key="..\:/MobileApps/TmapAPI_firstAttempt/app/src/main/res/layout/activity_main.xml" value="0.268" />
         <entry key="..\:/Users/82102/StudioProjects/TmapAPI_dblocation/app/src/main/res/layout/activity_main.xml" value="0.11510416666666666" />
